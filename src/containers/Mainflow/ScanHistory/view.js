@@ -65,6 +65,7 @@ const view = ({navigation}) => {
   }, []);
   const fetchTotalCoin = async () => {
     let body = {sessionToken: auth.sessionToken};
+    console.log(body);
     try {
       const config = {
         headers: {

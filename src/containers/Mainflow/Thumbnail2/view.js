@@ -6,6 +6,7 @@ import {
   ScrollView,
   Dimensions,
   TouchableOpacity,
+  Alert,
 } from 'react-native';
 import BottomButton from '../../../components/BottomButton';
 import CalendarTc from '../../../components/CalendarTc';
@@ -17,13 +18,21 @@ import {NormalBoldLabel} from '../../../components/Label';
 import TouchableNoFeedback from '../../../components/TouchableNoFeedback';
 import Swiper from 'react-native-swiper';
 import RowView from '../../../components/RowView';
+import dayjs from 'dayjs';
+import api from '../../../api';
+import {useSelector} from 'react-redux';
 
 const {width} = Dimensions.get('window');
 
 const view = ({navigation}) => {
-  const [num, setNum] = useState(0);
-
+  const auth = useSelector(state => state.auth);
+  const [dates, setDates] = useState([]);
+  let today = dayjs(new Date()).format('YYYY-MM-DD');
   useEffect(() => {
+    AttendanceRecord();
+  }, []);
+  useEffect(() => {
+    // header Main페이지로 이동.
     navigation.setOptions({
       headerLeft: () => null,
       headerRight: () => (
@@ -42,18 +51,63 @@ const view = ({navigation}) => {
         </Touchable>
       ),
     });
+    // 오늘 출석하기 sesstionToken,Date ='YYYY-MM-DD'
+    console.log('today', today);
   }, []);
 
-  const increase = useCallback(() => {
-    setNum(num + 1);
-  }, []);
+  const Attendance = async () => {
+    if (dates.filter(date => date[1] === today).length !== 0) {
+      Alert.alert('금일은 출석 완료하였습니다');
+      return;
+    }
+    let body = {sessionToken: auth.sessionToken, Date: today};
+    console.log(body);
+    api
+      .post('attendance', JSON.stringify(body), {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+      .then(res => {
+        if (res.status !== 200) {
+          return;
+        }
+        console.log(res.status);
+      })
+      .catch(err => {
+        console.log('에러메세지', err);
+      });
+  };
+
+  const AttendanceRecord = async () => {
+    let body = {sessionToken: auth.sessionToken};
+    console.log(body);
+    api
+      .post('attendancerecord', JSON.stringify(body), {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+      .then(res => {
+        if (res.status !== 200) {
+          return;
+        }
+
+        // console.log('11111', res);
+        // console.log(res?.data.Result);
+        // console.log(res?.data.Result);
+        setDates(res?.data?.Result);
+      })
+      .catch(err => {
+        console.log('에러메세지 Record', err);
+      });
+  };
 
   return (
     <WhiteSafeAreaView>
       <ScrollView
         style={styles.container}
-        contentContainerStyle={styles.scrollContainer}
-      >
+        contentContainerStyle={styles.scrollContainer}>
         <Swiper
           autoplay
           style={styles.swiperContainer}
@@ -74,12 +128,10 @@ const view = ({navigation}) => {
           paginationStyle={{
             // position: 'relative',
             bottom: 9,
-          }}
-        >
+          }}>
           <TouchableOpacity
             onPress={() => navigation.navigate('Thumbnail1')}
-            style={{flex: 1, justifyContent: 'center'}}
-          >
+            style={{flex: 1, justifyContent: 'center'}}>
             <RowView style={styles.swiperContentWrapper}>
               <NormalBoldLabel
                 text={'유럽 미인들의 필수품'}
@@ -94,8 +146,7 @@ const view = ({navigation}) => {
 
           <TouchableOpacity
             onPress={() => navigation.navigate('Thumbnail2')}
-            style={{flex: 1, justifyContent: 'center'}}
-          >
+            style={{flex: 1, justifyContent: 'center'}}>
             <RowView style={styles.swiperContentWrapper}>
               <NormalBoldLabel
                 text={'매일 매일 출석만 해도!'}
@@ -110,8 +161,7 @@ const view = ({navigation}) => {
 
           <TouchableOpacity
             onPress={() => navigation.navigate('Thumbnail3')}
-            style={{flex: 1, justifyContent: 'center'}}
-          >
+            style={{flex: 1, justifyContent: 'center'}}>
             <RowView style={styles.swiperContentWrapper2}>
               <NormalBoldLabel
                 text={'터치토큰,' + '\n' + '적립해서 이자 받으셔야죠!'}
@@ -121,8 +171,7 @@ const view = ({navigation}) => {
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => navigation.navigate('Thumbnail4')}
-            style={{flex: 1, justifyContent: 'center'}}
-          >
+            style={{flex: 1, justifyContent: 'center'}}>
             <RowView style={styles.swiperContentWrapper3}>
               <NormalBoldLabel
                 text={
@@ -137,15 +186,19 @@ const view = ({navigation}) => {
         </Swiper>
 
         <BottomButton
-          text={'오늘 출석하기'}
-          onPress={increase}
+          text={
+            dates.filter(date => date[1] === today).length !== 0
+              ? '금일 출석완료'
+              : '오늘 출석하기'
+          }
+          onPress={Attendance}
           style={styles.attendBtn}
         />
 
         <Text style={styles.attendTxt}>
-          출석일수 <Text style={{fontSize: 26}}>{num}</Text>일
+          출석일수 <Text style={{fontSize: 26}}>{dates.length}</Text>일
         </Text>
-        <CalendarTc onDayPress={() => setNum(num + 1)} />
+        <CalendarTc dates={dates} />
       </ScrollView>
     </WhiteSafeAreaView>
   );

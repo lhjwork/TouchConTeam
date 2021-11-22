@@ -25,6 +25,7 @@ import {useDispatch, useSelector} from 'react-redux';
 
 const view = ({navigation, sendmodal, route}) => {
   let coins = route.params.coins;
+
   const dispatch = useDispatch();
   const auth = useSelector(state => state.auth);
   const {walletAddress, walletURL} = auth;

@@ -50,7 +50,7 @@
     "react-native-swiper-view": "^1.2.0",
     "react-native-switch-toggle": "^2.2.1",
     "react-native-tab-view": "^3.1.1",
-    "react-native-vector-icons": "^8.1.0",
+    "react-native-vector-icons": "^9.0.0",
     "react-native-web-swiper": "^2.2.1",
     "react-navigation": "^4.4.4",
     "react-redux": "^7.2.5",

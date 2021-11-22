@@ -14,7 +14,12 @@ import Touchable from '../../../components/Touchable';
 import {NormalBoldLabel} from '../../../components/Label';
 import RowView from '../../../components/RowView';
 import {useDispatch, useSelector} from 'react-redux';
-import {pinLogin, saveEmail, saveSessionToken} from '../../../redux/authSlice';
+import {
+  pinLogin,
+  resetAuth,
+  saveEmail,
+  saveSessionToken,
+} from '../../../redux/authSlice';
 import axios from 'axios';
 import api from '../../../api';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -64,7 +69,7 @@ export default function Pinlogin({route}) {
   useEffect(() => {
     // getPinRegister();
   }, []);
-  useEffect(() => {}, []);
+
   const getPinRegister = () => {
     //등록시 사용하는 이벤트입니다
     let Email = route.params.Email;
@@ -81,6 +86,7 @@ export default function Pinlogin({route}) {
         }
         dispatch(saveSessionToken(res?.data?.Result));
         dispatch(saveEmail(Email));
+
         Alert.alert('PIN번호가 등록되었습니다');
         navigation.navigate('Main');
         // console.log( res?.data?.Result);

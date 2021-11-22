@@ -9,6 +9,7 @@ import {
 import dayjs from 'dayjs';
 import {saveSessionToken} from '../redux/authSlice';
 import api from '../api';
+import {useSelector} from 'react-redux';
 
 LocaleConfig.locales['ko'] = {
   monthNames: [
@@ -54,11 +55,14 @@ LocaleConfig.locales['ko'] = {
 };
 LocaleConfig.defaultLocale = 'ko';
 
-const CalendarTc = ({onDayPress}) => {
-  const [date, setDate] = useState(['2021-11-23', '2021-11-24']);
+const CalendarTc = ({dates}) => {
+  const auth = useSelector(state => state.auth);
+  const [date, setDate] = useState([]);
+  const [arrayDate, setArrayDayes] = useState();
+
   let markedDay = {};
-  date.map(item => {
-    markedDay[item] = {
+  dates.map(item => {
+    markedDay[item[1]] = {
       selected: true,
       startingDay: true,
       endingDay: true,
@@ -67,12 +71,15 @@ const CalendarTc = ({onDayPress}) => {
       color: '#FD7F36',
     };
   });
-
-  useEffect(() => {}, []);
-
-  const getDate = async sessionToken => {
-    api.post('attendancerecord');
-  };
+  useEffect(() => {
+    // {
+    //   for (let i = 0; i <= dates.length; i++) {
+    // dates[i][1];
+    console.log(dates);
+    //   }
+    // }
+    // setArrayDayes(dates);
+  }, []);
 
   return (
     <Calendar

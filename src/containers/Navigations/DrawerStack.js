@@ -27,8 +27,7 @@ export const DrawerStack = () => {
       //   drawerPosition: 'right',
       //   // drawerType: 'front',
       // }}
-      drawerContent={props => <RightDrawer />}
-    >
+      drawerContent={props => <RightDrawer />}>
       <Stack.Screen
         name="Home"
         component={Main}
